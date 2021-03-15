@@ -1,0 +1,20 @@
+version: '2'
+services:
+    suricata:
+        image: jasonish/suricata:latest
+        volumes:
+            - ./pcaps:/pcap
+            - ./suricata_logs:/logs
+        command: -r /pcap/${PCAP_NAME} -l /logs -k none
+    zeek:
+        image: grigorescu/zeek_ubuntu_20
+        volumes:
+            - ./pcaps:/pcap
+            - ./zeek_logs:/zeek_logs
+            - ./zeek/local.zeek:/usr/local/zeek/share/zeek/site/local.zeek
+        working_dir: /zeek_logs
+        environment:
+            - PATH="/bin:/usr/bin:/usr/local/bin:/usr/local/zeek/bin"
+
+        command: bash -c "/usr/local/zeek/bin/zeek -r /pcap/${PCAP_NAME} local"
+
